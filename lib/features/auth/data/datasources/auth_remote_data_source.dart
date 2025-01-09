@@ -34,26 +34,14 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource{
       final response = await supabaseClient.auth.signUp(
         password: password, 
         email: email,
-        // data: {
-        //   'name':name,
-        // }
+        data: {
+          'name':name,
+        } // if i use data here the user sign up doesn't store on supabase
       );
       if (response.user == null) {
         throw const ServerException('User is null.');
       }
-      // If you want to store additional user data (e.g., name), do it after signing up
-      final userId = response.user!.id;
-
-      final userDataResponse = await supabaseClient.from('users').upsert({
-        'id': userId,
-        'name': name,
-      });
-
-      if (userDataResponse.error != null) {
-        throw ServerException('Failed to store user data.');
-      }
-
-      return userId;
+      return response.user!.id;
     } catch (e) {
       throw ServerException(e.toString());
     }
